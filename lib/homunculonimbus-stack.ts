@@ -1,16 +1,14 @@
-import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as cdk from "aws-cdk-lib";
+import { Construct } from "constructs";
+import { Api } from "./api";
+import { Database } from "./database";
 
 export class HomunculonimbusStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const database = new Database(this, `${id}-database`);
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'HomunculonimbusQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const api = new Api(this, `${id}-api`, database);
   }
 }
