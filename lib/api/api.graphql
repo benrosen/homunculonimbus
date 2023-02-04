@@ -53,9 +53,9 @@ input EdgeMatcher {
 }
 
 input EdgesMatcher {
-	everyEdge: [EdgeMatcher]
-	anyEdge: [EdgeMatcher]
-	noEdge: [EdgeMatcher]
+	every: [EdgeMatcher]
+	any: [EdgeMatcher]
+	none: [EdgeMatcher]
 	and: [EdgesMatcher]
 	or: [EdgesMatcher]
 	not: [EdgesMatcher]
@@ -73,9 +73,9 @@ input FeatureMatcher {
 }
 
 input FeaturesMatcher {
-	everyFeature: [FeatureMatcher]
-	anyFeature: [FeatureMatcher]
-	noFeature: [FeatureMatcher]
+	every: [FeatureMatcher]
+	any: [FeatureMatcher]
+	none: [FeatureMatcher]
 	and: [FeaturesMatcher]
 	or: [FeaturesMatcher]
 	not: [FeaturesMatcher]
@@ -91,9 +91,9 @@ input NodeMatcher {
 }
 
 input NodesMatcher {
-	everyNode: [NodeMatcher]
-	anyNode: [NodeMatcher]
-	noNode: [NodeMatcher]
+	every: [NodeMatcher]
+	any: [NodeMatcher]
+	none: [NodeMatcher]
 	and: [NodesMatcher]
 	or: [NodesMatcher]
 	not: [NodesMatcher]
@@ -113,7 +113,7 @@ query {
 			or: [
 				{
 					features: {
-						anyFeature: [
+						any: [
 							{
 								id: {
 									or: [
