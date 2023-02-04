@@ -1,0 +1,146 @@
+scalar AWSJSON
+
+type Edge {
+	id: ID!
+	firstNode: Node!
+	secondNode: Node!
+	features: [Feature]!
+}
+
+type Feature {
+	id: ID!
+	nodes: [Node]
+	edges: [Edge]
+	key: String!
+	value: AWSJSON!
+}
+
+type Node {
+	id: ID!
+	edges: [Edge]!
+	features: [Feature]!
+}
+
+input IDMatcher {
+	equals: ID,
+	and: [IDMatcher],
+	or: [IDMatcher],
+	not: [IDMatcher]
+}
+
+input StringMatcher {
+	equals: String,
+	and: [StringMatcher],
+	or: [StringMatcher],
+	not: [StringMatcher]
+}
+
+input AWSJSONMatcher {
+	equals: AWSJSON,
+	and: [AWSJSONMatcher],
+	or: [AWSJSONMatcher],
+	not: [AWSJSONMatcher]
+}
+
+input EdgeMatcher {
+	id: IDMatcher
+	firstNode: NodeMatcher
+	secondNode: NodeMatcher
+	features: [FeatureMatcher]
+	and: [EdgeMatcher]
+	or: [EdgeMatcher]
+	not: [EdgeMatcher]
+}
+
+input EdgesMatcher {
+	everyEdge: [EdgeMatcher]
+	anyEdge: [EdgeMatcher]
+	noEdge: [EdgeMatcher]
+	and: [EdgesMatcher]
+	or: [EdgesMatcher]
+	not: [EdgesMatcher]
+}
+
+input FeatureMatcher {
+	id: IDMatcher
+	nodes: NodesMatcher
+	edges: EdgesMatcher
+	key: StringMatcher
+	value: AWSJSONMatcher
+	and: [FeatureMatcher]
+	or: [FeatureMatcher]
+	not: [FeatureMatcher]
+}
+
+input FeaturesMatcher {
+	everyFeature: [FeatureMatcher]
+	anyFeature: [FeatureMatcher]
+	noFeature: [FeatureMatcher]
+	and: [FeaturesMatcher]
+	or: [FeaturesMatcher]
+	not: [FeaturesMatcher]
+}
+
+input NodeMatcher {
+	id: IDMatcher
+	edges: EdgesMatcher
+	features: FeaturesMatcher
+	and: [NodeMatcher]
+	or: [NodeMatcher]
+	not: [NodeMatcher]
+}
+
+input NodesMatcher {
+	everyNode: [NodeMatcher]
+	anyNode: [NodeMatcher]
+	noNode: [NodeMatcher]
+	and: [NodesMatcher]
+	or: [NodesMatcher]
+	not: [NodesMatcher]
+}
+
+input NodeSortingExpression {
+	id: ID
+}
+
+type Query {
+	nodes(matchBy: NodeMatcher, sortBy: NodeSortingExpression): [Node]!
+}
+
+query {
+	nodes(
+		matchBy: {
+			or: [
+				{
+					features: {
+						anyFeature: [
+							{
+								id: {
+									or: [
+										{
+											equals: "foo"
+										},
+										{
+											equals: "bar"
+										}
+									]
+								}
+							}
+						]
+					}
+				},
+				{
+					id: {
+						equals: "bar"
+					}
+				}
+			]
+		}
+	){
+		id
+		features {
+			key
+			value
+		}
+	}
+}
