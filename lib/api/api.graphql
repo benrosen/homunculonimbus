@@ -1,13 +1,9 @@
 #
 # TODO
 #
-# Add more matching properties besides "equals"
-# See if fragments can be useful for query building
-# Configure sorting expressions
-# Configure aggregates
-# Create a bunch of useful queries
 # Configure mutations
-# Refactor to use interfaces to reduce duplicate code
+# Refactor to use interfaces and fragments to reduce duplicate code
+# Create a bunch of useful queries
 
 type Edge {
 	id: ID!
