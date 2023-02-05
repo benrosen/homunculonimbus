@@ -1,4 +1,13 @@
-scalar AWSJSON
+#
+# TODO
+#
+# Add more matching properties besides "equals"
+# See if fragments can be useful for query building
+# Configure sorting expressions
+# Configure aggregates
+# Create a bunch of useful queries
+# Configure mutations
+# Refactor to use interfaces to reduce duplicate code
 
 type Edge {
 	id: ID!
@@ -12,7 +21,7 @@ type Feature {
 	nodes: [Node]
 	edges: [Edge]
 	key: String!
-	value: AWSJSON!
+	value: String!
 }
 
 type Node {
@@ -23,23 +32,56 @@ type Node {
 
 input IDMatcher {
 	equals: ID,
+	startsWith: String,
+	contains: String,
+	endsWith: String,
 	and: [IDMatcher],
 	or: [IDMatcher],
 	not: [IDMatcher]
 }
 
+input KeyMatcher {
+	equals: String,
+	startsWith: String,
+	contains: String,
+	endsWith: String,
+	and: [KeyMatcher],
+	or: [KeyMatcher],
+	not: [KeyMatcher]
+}
+
+input ValueMatcher {
+	equals: String,
+	startsWith: String,
+	contains: String,
+	endsWith: String,
+	isLessThan: IntMatcher,
+	isGreaterThan: IntMatcher,
+	isContainedBy: [String],
+	and: [ValueMatcher],
+	or: [ValueMatcher],
+	not: [ValueMatcher]
+}
+
+input IntMatcher {
+	equals: Int,
+	isLessThan: Int,
+	isGreaterThan: Int,
+	isContainedBy: [Int],
+	and: [IntMatcher],
+	or: [IntMatcher],
+	not: [IntMatcher]
+}
+
 input StringMatcher {
 	equals: String,
+	startsWith: String,
+	contains: String,
+	endsWith: String,
+	isContainedBy: [String],
 	and: [StringMatcher],
 	or: [StringMatcher],
 	not: [StringMatcher]
-}
-
-input AWSJSONMatcher {
-	equals: AWSJSON,
-	and: [AWSJSONMatcher],
-	or: [AWSJSONMatcher],
-	not: [AWSJSONMatcher]
 }
 
 input EdgeMatcher {
@@ -53,6 +95,7 @@ input EdgeMatcher {
 }
 
 input EdgesMatcher {
+	metadata: EdgesMetadataMatcher
 	every: [EdgeMatcher]
 	any: [EdgeMatcher]
 	none: [EdgeMatcher]
@@ -65,14 +108,15 @@ input FeatureMatcher {
 	id: IDMatcher
 	nodes: NodesMatcher
 	edges: EdgesMatcher
-	key: StringMatcher
-	value: AWSJSONMatcher
+	key: KeyMatcher
+	value: ValueMatcher
 	and: [FeatureMatcher]
 	or: [FeatureMatcher]
 	not: [FeatureMatcher]
 }
 
 input FeaturesMatcher {
+	metadata: FeaturesMetadataMatcher
 	every: [FeatureMatcher]
 	any: [FeatureMatcher]
 	none: [FeatureMatcher]
@@ -91,6 +135,7 @@ input NodeMatcher {
 }
 
 input NodesMatcher {
+	metadata: NodesMetadataMatcher
 	every: [NodeMatcher]
 	any: [NodeMatcher]
 	none: [NodeMatcher]
@@ -99,48 +144,96 @@ input NodesMatcher {
 	not: [NodesMatcher]
 }
 
-input NodeSortingExpression {
-	id: ID
+input EdgesSorter {
+	features: FeaturesSorter
+	nodes: NodesSorter
+	limit: Int
+	offset: Int
+}
+
+enum SortDirection {
+	Ascending
+	Descending
+}
+
+input FeaturesSorter {
+	edges: EdgesSorter
+	nodes: NodesSorter
+	key: SortDirection
+	value: SortDirection
+	limit: Int
+	offset: Int
+}
+
+input NodesSorter {
+	edges: EdgesSorter
+	features: FeaturesSorter
+	limit: Int
+	offset: Int
+}
+
+input EdgesMetadataMatcher {
+	count: IntMatcher
+	nodes: NodesMetadataMatcher
+	features: FeaturesMetadataMatcher
+}
+
+input ValueMetadataMatcher {
+	shortest: StringMatcher
+	longest: StringMatcher
+	minimum: IntMatcher
+	maximum: IntMatcher
+	average: IntMatcher
+	sum: IntMatcher
+}
+
+input FeaturesMetadataMatcher {
+	count: IntMatcher
+	edges: EdgesMetadataMatcher
+	nodes: NodesMetadataMatcher
+	value: ValueMetadataMatcher
+}
+
+input NodesMetadataMatcher {
+	count: IntMatcher
+	edges: EdgesMetadataMatcher
+	features: FeaturesMetadataMatcher
+}
+
+type ValueMetadata {
+	shortest: String
+	longest: String
+	minimum: Int
+	maximum: Int
+	average: Int
+	sum: Int
+}
+
+type EdgesMetadata {
+	count: Int
+	nodes: NodesMetadata
+	features: FeaturesMetadata
+}
+
+type FeaturesMetadata {
+	count: Int
+	value: ValueMetadata
+	nodes: NodesMetadata
+	edges: EdgesMetadata
+}
+
+type NodesMetadata {
+	count: Int
+	features: FeaturesMetadata
+	edges: EdgesMetadata
 }
 
 type Query {
-	nodes(matchBy: NodeMatcher, sortBy: NodeSortingExpression): [Node]!
+	getNodes(matchBy: NodeMatcher, sortBy: NodesSorter): [Node]!
+	aggregateNodes(matchBy: NodeMatcher): NodesMetadata!
+	getFeatures(matchBy: FeatureMatcher, sortBy: FeaturesSorter): [Feature]!
+	aggregateFeatures(matchBy: FeatureMatcher): FeaturesMetadata!
+	getEdges(matchBy:EdgeMatcher, sortBy:EdgesSorter): [Edge]!
+	aggregateEdges(matchBy: EdgeMatcher): EdgesMetadata!
 }
 
-query {
-	nodes(
-		matchBy: {
-			or: [
-				{
-					features: {
-						any: [
-							{
-								id: {
-									or: [
-										{
-											equals: "foo"
-										},
-										{
-											equals: "bar"
-										}
-									]
-								}
-							}
-						]
-					}
-				},
-				{
-					id: {
-						equals: "bar"
-					}
-				}
-			]
-		}
-	){
-		id
-		features {
-			key
-			value
-		}
-	}
-}
