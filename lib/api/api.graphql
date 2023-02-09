@@ -1,235 +1,248 @@
-#
-# TODO
-#
-# Configure mutations
-# Refactor to use interfaces and fragments to reduce duplicate code
-# Create a bunch of useful queries
+type Node {
+	id: ID!
+	edges(select: EdgesRequest): EdgesResponse
+	features(select: FeaturesRequest): FeaturesResponse!
+}
 
 type Edge {
 	id: ID!
-	firstNode: Node!
-	secondNode: Node!
-	features: [Feature]!
+	features(select: FeaturesRequest): FeaturesResponse!
+	nodes(select: NodesRequest): NodesResponse!
 }
 
 type Feature {
-	id: ID!
-	nodes: [Node]
-	edges: [Edge]
+	id: String!
 	key: String!
 	value: String!
+	edges(select: EdgesRequest): EdgesResponse
+	nodes(select: NodesRequest): NodesResponse!
 }
 
-type Node {
-	id: ID!
-	edges: [Edge]!
-	features: [Feature]!
+#
+#
+#
+
+interface Count {
+	total: Int
+	unique: Int
 }
 
-input IDMatcher {
-	equals: ID,
-	startsWith: String,
-	contains: String,
-	endsWith: String,
-	and: [IDMatcher],
-	or: [IDMatcher],
-	not: [IDMatcher]
+#
+#
+#
+
+interface FloatReducer {
+	mean: Float
+	median: Float
+	mode: Float
+	minimum: Float
+	maximum: Float
 }
 
-input KeyMatcher {
-	equals: String,
-	startsWith: String,
-	contains: String,
-	endsWith: String,
-	and: [KeyMatcher],
-	or: [KeyMatcher],
-	not: [KeyMatcher]
-}
-
-input ValueMatcher {
-	equals: String,
-	startsWith: String,
-	contains: String,
-	endsWith: String,
-	isLessThan: IntMatcher,
-	isGreaterThan: IntMatcher,
-	isContainedBy: [String],
-	and: [ValueMatcher],
-	or: [ValueMatcher],
-	not: [ValueMatcher]
-}
-
-input IntMatcher {
-	equals: Int,
-	isLessThan: Int,
-	isGreaterThan: Int,
-	isContainedBy: [Int],
-	and: [IntMatcher],
-	or: [IntMatcher],
-	not: [IntMatcher]
-}
-
-input StringMatcher {
-	equals: String,
-	startsWith: String,
-	contains: String,
-	endsWith: String,
-	isContainedBy: [String],
-	and: [StringMatcher],
-	or: [StringMatcher],
-	not: [StringMatcher]
-}
-
-input EdgeMatcher {
-	id: IDMatcher
-	firstNode: NodeMatcher
-	secondNode: NodeMatcher
-	features: [FeatureMatcher]
-	and: [EdgeMatcher]
-	or: [EdgeMatcher]
-	not: [EdgeMatcher]
-}
-
-input EdgesMatcher {
-	metadata: EdgesMetadataMatcher
-	every: [EdgeMatcher]
-	any: [EdgeMatcher]
-	none: [EdgeMatcher]
-	and: [EdgesMatcher]
-	or: [EdgesMatcher]
-	not: [EdgesMatcher]
-}
-
-input FeatureMatcher {
-	id: IDMatcher
-	nodes: NodesMatcher
-	edges: EdgesMatcher
-	key: KeyMatcher
-	value: ValueMatcher
-	and: [FeatureMatcher]
-	or: [FeatureMatcher]
-	not: [FeatureMatcher]
-}
-
-input FeaturesMatcher {
-	metadata: FeaturesMetadataMatcher
-	every: [FeatureMatcher]
-	any: [FeatureMatcher]
-	none: [FeatureMatcher]
-	and: [FeaturesMatcher]
-	or: [FeaturesMatcher]
-	not: [FeaturesMatcher]
-}
-
-input NodeMatcher {
-	id: IDMatcher
-	edges: EdgesMatcher
-	features: FeaturesMatcher
-	and: [NodeMatcher]
-	or: [NodeMatcher]
-	not: [NodeMatcher]
-}
-
-input NodesMatcher {
-	metadata: NodesMetadataMatcher
-	every: [NodeMatcher]
-	any: [NodeMatcher]
-	none: [NodeMatcher]
-	and: [NodesMatcher]
-	or: [NodesMatcher]
-	not: [NodesMatcher]
-}
-
-input EdgesSorter {
-	features: FeaturesSorter
-	nodes: NodesSorter
-	limit: Int
-	offset: Int
-}
-
-enum SortDirection {
-	Ascending
-	Descending
-}
-
-input FeaturesSorter {
-	edges: EdgesSorter
-	nodes: NodesSorter
-	key: SortDirection
-	value: SortDirection
-	limit: Int
-	offset: Int
-}
-
-input NodesSorter {
-	edges: EdgesSorter
-	features: FeaturesSorter
-	limit: Int
-	offset: Int
-}
-
-input EdgesMetadataMatcher {
-	count: IntMatcher
-	nodes: NodesMetadataMatcher
-	features: FeaturesMetadataMatcher
-}
-
-input ValueMetadataMatcher {
-	shortest: StringMatcher
-	longest: StringMatcher
-	minimum: IntMatcher
-	maximum: IntMatcher
-	average: IntMatcher
-	sum: IntMatcher
-}
-
-input FeaturesMetadataMatcher {
-	count: IntMatcher
-	edges: EdgesMetadataMatcher
-	nodes: NodesMetadataMatcher
-	value: ValueMetadataMatcher
-}
-
-input NodesMetadataMatcher {
-	count: IntMatcher
-	edges: EdgesMetadataMatcher
-	features: FeaturesMetadataMatcher
-}
-
-type ValueMetadata {
+interface StringReducer {
+	mostCommon: String
 	shortest: String
 	longest: String
-	minimum: Int
-	maximum: Int
-	average: Int
-	sum: Int
 }
 
-type EdgesMetadata {
-	count: Int
-	nodes: NodesMetadata
-	features: FeaturesMetadata
+interface BooleanReducer {
+	mostCommon: Boolean
 }
 
-type FeaturesMetadata {
-	count: Int
-	value: ValueMetadata
-	nodes: NodesMetadata
-	edges: EdgesMetadata
+#
+#
+#
+
+interface FeatureKeyReducer {
+	mostCommon: String
 }
 
-type NodesMetadata {
-	count: Int
-	features: FeaturesMetadata
-	edges: EdgesMetadata
+interface FeatureValueReducer {
+	asBoolean: BooleanReducer
+	asFloat: FloatReducer
+	asString: StringReducer
 }
+
+#
+#
+#
+
+input BooleanInstanceMatcher {
+	equals: Boolean
+}
+
+input FloatInstanceMatcher {
+	equals: Float
+	isGreaterThan: Float
+	isGreaterThanOrEqualTo: Float
+	isLessThan: Float
+	isLessThanOrEqualTo: Float
+}
+
+input StringInstanceMatcher {
+	equals: String
+	startsWith: String
+	endsWith: String
+	contains: String
+}
+
+#
+#
+#
+
+input FeatureValueInstanceMatcher {
+	asBoolean: BooleanInstanceMatcher
+	asFloat: FloatInstanceMatcher
+	asString: StringInstanceMatcher
+}
+
+input FeatureInstanceMatcher {
+	id: StringInstanceMatcher
+	key: StringInstanceMatcher
+	value: FeatureValueInstanceMatcher
+}
+
+#input FeatureCollectionMatcher {
+#
+#}
+
+input FeaturesRequest {
+	where: FeatureInstanceMatcher
+	limit: Int
+	offset: Int
+}
+
+#
+#
+#
+
+interface FeaturesResponse {
+	calculate: FeaturesResponseReducer
+	enumerate: [Feature]
+}
+
+interface FeaturesResponseReducer {
+	count: Count
+	key: FeatureKeyReducer
+	value: FeatureValueReducer
+	edges(select: EdgesRequest): EdgesResponseReducer
+	nodes(select: NodesRequest): NodesResponseReducer
+}
+
+#
+#
+#
+
+input NodeInstanceMatcher {
+	id: StringInstanceMatcher
+}
+
+#
+#
+#
+
+input NodesRequest {
+	where: NodeInstanceMatcher
+	limit: Int
+	offset: Int
+}
+
+#
+#
+#
+
+interface NodesResponse {
+	calculate: NodesResponseReducer
+	enumerate: [Node]
+}
+
+interface NodesResponseReducer {
+	count: Count
+	edges(select: EdgesRequest): EdgesResponseReducer
+	features(select: FeaturesRequest): FeaturesResponseReducer
+}
+
+#
+#
+#
+
+input EdgeInstanceMatcher {
+	id: StringInstanceMatcher
+}
+
+#
+#
+#
+
+input EdgesRequest {
+	where: EdgeInstanceMatcher
+	limit: Int
+	offset: Int
+}
+
+#
+#
+#
+
+interface EdgesResponse {
+	calculate: EdgesResponseReducer
+	enumerate: [Edge]
+}
+
+interface EdgesResponseReducer {
+	count: Count
+	features(select: FeaturesRequest): FeaturesResponseReducer
+	nodes(select: NodesRequest): NodesResponseReducer
+}
+
+#
+#
+#
 
 type Query {
-	getNodes(matchBy: NodeMatcher, sortBy: NodesSorter): [Node]!
-	aggregateNodes(matchBy: NodeMatcher): NodesMetadata!
-	getFeatures(matchBy: FeatureMatcher, sortBy: FeaturesSorter): [Feature]!
-	aggregateFeatures(matchBy: FeatureMatcher): FeaturesMetadata!
-	getEdges(matchBy:EdgeMatcher, sortBy:EdgesSorter): [Edge]!
-	aggregateEdges(matchBy: EdgeMatcher): EdgesMetadata!
+	edges(select: EdgesRequest): EdgesResponse!
+	features(select: FeaturesRequest): FeaturesResponse!
+	nodes(select: NodesRequest): NodesResponse!
 }
 
+#
+#
+#
+
+query getHighScore {
+	features(select: {where: {key: {equals: "score"}}}) {
+		calculate {
+			value {
+				asFloat {
+					maximum
+				}
+			}
+		}
+	}
+}
+
+query getAverageScoreByUserId($userId: String!) {
+	features(select: {where: {key: {equals: "userId"}, value: {asString: {equals: $userId}}}}) {
+		calculate {
+			nodes {
+				edges {
+					nodes {
+						features(select: {where: {key: {equals: "score"}}}) {
+							value {
+								asFloat {
+									mean
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+# TODO add directionality to edges
+# TODO sorting?
+# TODO add args to Feature.key and Feature.value?
+# TODO logical operators (and or not)?
+# TODO array operators (every any none)?
