@@ -60,6 +60,15 @@ interface BooleanReducer {
 	mostCommon: Boolean
 }
 
+interface TimestampReducer {
+	mean: Int
+	median: Int
+	mode: Int
+	minimum: Int
+	maximum: Int
+	total: Int
+}
+
 #
 #
 #
@@ -72,6 +81,7 @@ interface FeatureValueReducer {
 	asBoolean: BooleanReducer
 	asFloat: FloatReducer
 	asString: StringReducer
+	asTimestamp: TimestampReducer
 }
 
 #
@@ -97,6 +107,14 @@ input StringInstanceMatcher {
 	contains: String
 }
 
+input TimestampInstanceMatcher {
+	equals: Int
+	isGreaterThan: Int
+	isGreaterThanOrEqualTo: Int
+	isLessThan: Int
+	isLessThanOrEqualTo: Int
+}
+
 #
 #
 #
@@ -105,6 +123,7 @@ input FeatureValueInstanceMatcher {
 	asBoolean: BooleanInstanceMatcher
 	asFloat: FloatInstanceMatcher
 	asString: StringInstanceMatcher
+	asTimestamp: TimestampInstanceMatcher
 }
 
 input FeatureInstanceMatcher {
@@ -260,7 +279,18 @@ type Query {
 #
 #
 
+query {
+	features(select: {where: {value: {asTimestamp: {isLessThan: 123}}}}) {
+		calculate {
+			value {
+				asTimestamp {
+					mean
+				}
+			}
+		}
+	}
+}
+
 # TODO sorting?
 # TODO add args to Feature.key and Feature.value?
 # TODO logical operators (and or not)?
-# TODO createdAt timestamps?
