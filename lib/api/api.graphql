@@ -1,13 +1,23 @@
+type NodeEdges {
+	inbound(select: EdgesRequest): EdgesResponse
+	outbound(select: EdgesRequest): EdgesResponse
+}
+
 type Node {
 	id: ID!
-	edges(select: EdgesRequest): EdgesResponse
+	edges: NodeEdges!
 	features(select: FeaturesRequest): FeaturesResponse!
+}
+
+type EdgeNodes {
+	origin: Node!
+	destination: Node!
 }
 
 type Edge {
 	id: ID!
+	nodes: EdgeNodes
 	features(select: FeaturesRequest): FeaturesResponse!
-	nodes(select: NodesRequest): NodesResponse!
 }
 
 type Feature {
@@ -37,6 +47,7 @@ interface FloatReducer {
 	mode: Float
 	minimum: Float
 	maximum: Float
+	total: Float
 }
 
 interface StringReducer {
@@ -156,9 +167,14 @@ interface NodesResponse {
 	enumerate: [Node]
 }
 
+interface NodeEdgesResponseReducer {
+	inbound(select: EdgesRequest): EdgesResponseReducer
+	outbound(select: EdgesRequest): EdgesResponseReducer
+}
+
 interface NodesResponseReducer {
 	count: Count
-	edges(select: EdgesRequest): EdgesResponseReducer
+	edges: NodeEdgesResponseReducer
 	features(select: FeaturesRequest): FeaturesResponseReducer
 }
 
@@ -189,10 +205,15 @@ interface EdgesResponse {
 	enumerate: [Edge]
 }
 
+interface EdgeNodesResponseReducer {
+	origin(select: NodesRequest): NodesResponseReducer
+	destination(select: NodesRequest): NodesResponseReducer
+}
+
 interface EdgesResponseReducer {
 	count: Count
 	features(select: FeaturesRequest): FeaturesResponseReducer
-	nodes(select: NodesRequest): NodesResponseReducer
+	nodes: EdgeNodesResponseReducer
 }
 
 #
@@ -209,40 +230,8 @@ type Query {
 #
 #
 
-query getHighScore {
-	features(select: {where: {key: {equals: "score"}}}) {
-		calculate {
-			value {
-				asFloat {
-					maximum
-				}
-			}
-		}
-	}
-}
-
-query getAverageScoreByUserId($userId: String!) {
-	features(select: {where: {key: {equals: "userId"}, value: {asString: {equals: $userId}}}}) {
-		calculate {
-			nodes {
-				edges {
-					nodes {
-						features(select: {where: {key: {equals: "score"}}}) {
-							value {
-								asFloat {
-									mean
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}
-
-# TODO add directionality to edges
 # TODO sorting?
 # TODO add args to Feature.key and Feature.value?
 # TODO logical operators (and or not)?
 # TODO array operators (every any none)?
+# TODO createdAt timestamps?
