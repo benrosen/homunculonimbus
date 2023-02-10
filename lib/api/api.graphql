@@ -111,11 +111,15 @@ input FeatureInstanceMatcher {
 	id: StringInstanceMatcher
 	key: StringInstanceMatcher
 	value: FeatureValueInstanceMatcher
+	nodes: NodeCollectionMatcher
+	edges: EdgeCollectionMatcher
 }
 
-#input FeatureCollectionMatcher {
-#
-#}
+input FeatureCollectionMatcher {
+	any: FeatureInstanceMatcher
+	every: FeatureInstanceMatcher
+	none: FeatureInstanceMatcher
+}
 
 input FeaturesRequest {
 	where: FeatureInstanceMatcher
@@ -144,8 +148,21 @@ interface FeaturesResponseReducer {
 #
 #
 
+input NodeEdgeCollectionMatcher {
+	inbound: EdgeCollectionMatcher
+	outbound: EdgeCollectionMatcher
+}
+
 input NodeInstanceMatcher {
 	id: StringInstanceMatcher
+	features: FeatureCollectionMatcher
+	edges: NodeEdgeCollectionMatcher
+}
+
+input NodeCollectionMatcher {
+	any: NodeInstanceMatcher
+	every: NodeInstanceMatcher
+	none: NodeInstanceMatcher
 }
 
 #
@@ -182,8 +199,21 @@ interface NodesResponseReducer {
 #
 #
 
+input EdgeNodeCollectionMatcher {
+	origin: NodeCollectionMatcher
+	destination: NodeCollectionMatcher
+}
+
 input EdgeInstanceMatcher {
 	id: StringInstanceMatcher
+	features: FeatureCollectionMatcher
+	nodes: EdgeNodeCollectionMatcher
+}
+
+input EdgeCollectionMatcher {
+	any: EdgeInstanceMatcher
+	every: EdgeInstanceMatcher
+	none: EdgeInstanceMatcher
 }
 
 #
@@ -233,5 +263,4 @@ type Query {
 # TODO sorting?
 # TODO add args to Feature.key and Feature.value?
 # TODO logical operators (and or not)?
-# TODO array operators (every any none)?
 # TODO createdAt timestamps?
