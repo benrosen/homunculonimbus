@@ -132,6 +132,9 @@ input FeatureInstanceMatcher {
 	value: FeatureValueInstanceMatcher
 	nodes: NodeCollectionMatcher
 	edges: EdgeCollectionMatcher
+	and: [FeatureInstanceMatcher]
+	or: [FeatureInstanceMatcher]
+	not: [FeatureInstanceMatcher]
 }
 
 input FeatureCollectionMatcher {
@@ -176,6 +179,9 @@ input NodeInstanceMatcher {
 	id: StringInstanceMatcher
 	features: FeatureCollectionMatcher
 	edges: NodeEdgeCollectionMatcher
+	and: [NodeInstanceMatcher]
+	or: [NodeInstanceMatcher]
+	not: [NodeInstanceMatcher]
 }
 
 input NodeCollectionMatcher {
@@ -218,15 +224,18 @@ interface NodesResponseReducer {
 #
 #
 
-input EdgeNodeCollectionMatcher {
-	origin: NodeCollectionMatcher
-	destination: NodeCollectionMatcher
+input EdgeNodeInstanceMatcher {
+	origin: NodeInstanceMatcher
+	destination: NodeInstanceMatcher
 }
 
 input EdgeInstanceMatcher {
 	id: StringInstanceMatcher
 	features: FeatureCollectionMatcher
-	nodes: EdgeNodeCollectionMatcher
+	nodes: EdgeNodeInstanceMatcher
+	and: [EdgeInstanceMatcher]
+	or: [EdgeInstanceMatcher]
+	not: [EdgeInstanceMatcher]
 }
 
 input EdgeCollectionMatcher {
@@ -279,18 +288,5 @@ type Query {
 #
 #
 
-query {
-	features(select: {where: {value: {asTimestamp: {isLessThan: 123}}}}) {
-		calculate {
-			value {
-				asTimestamp {
-					mean
-				}
-			}
-		}
-	}
-}
-
 # TODO sorting?
 # TODO add args to Feature.key and Feature.value?
-# TODO logical operators (and or not)?
