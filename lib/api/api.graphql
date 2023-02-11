@@ -177,12 +177,21 @@ input FeatureValueInstanceSorter {
 	asTimestamp: TimestampSortingOrder
 }
 
+input FeatureCollectionSorter {
+	count: FloatSortingOrder
+	id: StringInstanceSorter
+	key: StringInstanceSorter
+	value: FeatureValueInstanceSorter
+	nodes: NodeCollectionSorter
+	edges: EdgeCollectionSorter
+}
+
 input FeatureInstanceSorter {
 	id: StringInstanceSorter
 	key: StringInstanceSorter
 	value: FeatureValueInstanceSorter
-	nodes: NodeInstanceSorter
-	edges: EdgeInstanceSorter
+	nodes: NodeCollectionSorter
+	edges: EdgeCollectionSorter
 }
 
 input FeaturesRequest {
@@ -238,14 +247,21 @@ input NodeCollectionMatcher {
 #
 
 input NodeEdgeInstanceSorter {
-	outbound: EdgeInstanceSorter
-	inbound: EdgeInstanceSorter
+	outbound: EdgeCollectionSorter
+	inbound: EdgeCollectionSorter
+}
+
+input NodeCollectionSorter {
+	count: FloatSortingOrder
+	id: StringInstanceSorter
+	edges: NodeEdgeInstanceSorter
+	features: FeatureCollectionSorter
 }
 
 input NodeInstanceSorter {
 	id: StringInstanceSorter
 	edges: NodeEdgeInstanceSorter
-	features: FeatureInstanceSorter
+	features: FeatureCollectionSorter
 }
 
 input NodesRequest {
@@ -309,10 +325,17 @@ input EdgeNodeInstanceSorter {
 	destination: NodeInstanceSorter
 }
 
+input EdgeCollectionSorter {
+	count: FloatSortingOrder
+	id: StringInstanceSorter
+	nodes: EdgeNodeInstanceSorter
+	features: FeatureCollectionSorter
+}
+
 input EdgeInstanceSorter {
 	id: StringInstanceSorter
 	nodes: EdgeNodeInstanceSorter
-	features: FeatureInstanceSorter
+	features: FeatureCollectionSorter
 }
 
 input EdgesRequest {
@@ -355,5 +378,3 @@ type Query {
 #
 #
 #
-
-# TODO add args to Feature.key and Feature.value?
