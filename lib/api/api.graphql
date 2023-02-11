@@ -26,7 +26,43 @@ type Query {
 ##########
 ##########
 
-# TODO mutations
+interface DeletedEdgesAndFeatures {
+	edges(select: EdgesRequest): EdgesResponse!
+	features(select: FeaturesRequest): FeaturesResponse!
+}
+
+interface DeleteEdgesResponse {
+	deleted: DeletedEdgesAndFeatures
+}
+
+interface DeletedFeatures {
+	features(select: FeaturesRequest): FeaturesResponse!
+}
+
+interface DeleteFeaturesResponse {
+	deleted: DeletedFeatures
+}
+
+interface DeletedEdgesFeaturesAndNodes {
+	edges(select: EdgesRequest): EdgesResponse!
+	features(select: FeaturesRequest): FeaturesResponse!
+	nodes(select: NodesRequest): NodesResponse!
+}
+
+interface DeleteNodesResponse {
+	deleted: DeletedEdgesFeaturesAndNodes
+}
+
+interface Delete {
+	edges(select: EdgesRequest): DeleteEdgesResponse!
+	features(select: FeaturesRequest): DeleteFeaturesResponse!
+	nodes(select: NodesRequest): DeleteNodesResponse!
+}
+
+type Mutation {
+	delete: Delete
+	# TODO upsert
+}
 
 ##########
 ##########
