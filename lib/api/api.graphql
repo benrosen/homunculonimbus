@@ -119,6 +119,34 @@ input TimestampInstanceMatcher {
 #
 #
 
+enum FloatSortingOrder {
+	SmallerToBigger
+	BiggerToSmaller
+}
+
+enum StringSortingOrder {
+	AToZ
+	ZToA
+}
+
+enum TimestampSortingOrder {
+	NewerToOlder
+	OlderToNewer
+}
+
+#
+#
+#
+
+input StringInstanceSorter {
+	length: FloatSortingOrder
+	alphabetical: StringSortingOrder
+}
+
+#
+#
+#
+
 input FeatureValueInstanceMatcher {
 	asBoolean: BooleanInstanceMatcher
 	asFloat: FloatInstanceMatcher
@@ -143,8 +171,23 @@ input FeatureCollectionMatcher {
 	none: FeatureInstanceMatcher
 }
 
+input FeatureValueInstanceSorter {
+	asFloat: FloatSortingOrder
+	asString: StringInstanceSorter
+	asTimestamp: TimestampSortingOrder
+}
+
+input FeatureInstanceSorter {
+	id: StringInstanceSorter
+	key: StringInstanceSorter
+	value: FeatureValueInstanceSorter
+	nodes: NodeInstanceSorter
+	edges: EdgeInstanceSorter
+}
+
 input FeaturesRequest {
 	where: FeatureInstanceMatcher
+	by: FeatureInstanceSorter
 	limit: Int
 	offset: Int
 }
@@ -194,8 +237,20 @@ input NodeCollectionMatcher {
 #
 #
 
+input NodeEdgeInstanceSorter {
+	outbound: EdgeInstanceSorter
+	inbound: EdgeInstanceSorter
+}
+
+input NodeInstanceSorter {
+	id: StringInstanceSorter
+	edges: NodeEdgeInstanceSorter
+	features: FeatureInstanceSorter
+}
+
 input NodesRequest {
 	where: NodeInstanceMatcher
+	by: NodeInstanceSorter
 	limit: Int
 	offset: Int
 }
@@ -248,8 +303,21 @@ input EdgeCollectionMatcher {
 #
 #
 
+
+input EdgeNodeInstanceSorter {
+	origin: NodeInstanceSorter
+	destination: NodeInstanceSorter
+}
+
+input EdgeInstanceSorter {
+	id: StringInstanceSorter
+	nodes: EdgeNodeInstanceSorter
+	features: FeatureInstanceSorter
+}
+
 input EdgesRequest {
 	where: EdgeInstanceMatcher
+	by: EdgeInstanceSorter
 	limit: Int
 	offset: Int
 }
@@ -288,5 +356,4 @@ type Query {
 #
 #
 
-# TODO sorting?
 # TODO add args to Feature.key and Feature.value?
