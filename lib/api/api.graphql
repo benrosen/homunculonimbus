@@ -1,80 +1,223 @@
-type NodeEdges {
-	inbound(select: EdgesRequest): EdgesResponse
-	outbound(select: EdgesRequest): EdgesResponse
-}
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
 
-type Node {
-	id: ID!
-	edges: NodeEdges!
+type Query {
+	edges(select: EdgesRequest): EdgesResponse!
 	features(select: FeaturesRequest): FeaturesResponse!
-}
-
-type EdgeNodes {
-	origin: Node!
-	destination: Node!
-}
-
-type Edge {
-	id: ID!
-	nodes: EdgeNodes
-	features(select: FeaturesRequest): FeaturesResponse!
-}
-
-type Feature {
-	id: String!
-	key: String!
-	value: String!
-	edges(select: EdgesRequest): EdgesResponse
 	nodes(select: NodesRequest): NodesResponse!
 }
 
-#
-#
-#
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
 
-interface Count {
-	total: Int
-	unique: Int
-}
+# TODO mutations
 
-#
-#
-#
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
 
-interface FloatReducer {
-	mean: Float
-	median: Float
-	mode: Float
-	minimum: Float
-	maximum: Float
-	total: Float
-}
+# TODO subscriptions
 
-interface StringReducer {
-	mostCommon: String
-	shortest: String
-	longest: String
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+##########
+
+# TODO rewrite as typescript
+# TODO deploy appsync api
+# TODO create lambda interpreter
+
+input BooleanInstanceMatcher {
+	equals: Boolean
 }
 
 interface BooleanReducer {
 	mostCommon: Boolean
 }
 
-interface TimestampReducer {
-	mean: Int
-	median: Int
-	mode: Int
-	minimum: Int
-	maximum: Int
+interface Count {
 	total: Int
+	unique: Int
 }
 
-#
-#
-#
+interface Edge {
+	features(select: FeaturesRequest): FeaturesResponse!
+	id: ID!
+	nodes: EdgeNodes
+}
+
+input EdgeCollectionMatcher {
+	any: EdgeInstanceMatcher
+	every: EdgeInstanceMatcher
+	none: EdgeInstanceMatcher
+}
+
+input EdgeCollectionSorter {
+	count: FloatSortingOrder
+	features: FeatureCollectionSorter
+	id: StringInstanceSorter
+	nodes: EdgeNodeInstanceSorter
+}
+
+input EdgeInstanceMatcher {
+	and: [EdgeInstanceMatcher]
+	features: FeatureCollectionMatcher
+	id: StringInstanceMatcher
+	nodes: EdgeNodeInstanceMatcher
+	not: [EdgeInstanceMatcher]
+	or: [EdgeInstanceMatcher]
+}
+
+input EdgeInstanceSorter {
+	features: FeatureCollectionSorter
+	id: StringInstanceSorter
+	nodes: EdgeNodeInstanceSorter
+}
+
+input EdgeNodeInstanceMatcher {
+	destination: NodeInstanceMatcher
+	origin: NodeInstanceMatcher
+}
+
+input EdgeNodeInstanceSorter {
+	destination: NodeInstanceSorter
+	origin: NodeInstanceSorter
+}
+
+interface EdgeNodes {
+	destination: Node!
+	origin: Node!
+}
+
+interface EdgeNodesResponseReducer {
+	destination(select: NodesRequest): NodesResponseReducer
+	origin(select: NodesRequest): NodesResponseReducer
+}
+
+input EdgesRequest {
+	by: EdgeInstanceSorter
+	limit: Int
+	offset: Int
+	where: EdgeInstanceMatcher
+}
+
+interface EdgesResponse {
+	calculate: EdgesResponseReducer
+	enumerate: [Edge]
+}
+
+interface EdgesResponseReducer {
+	count: Count
+	features(select: FeaturesRequest): FeaturesResponseReducer
+	nodes: EdgeNodesResponseReducer
+}
+
+interface Feature {
+	edges(select: EdgesRequest): EdgesResponse
+	id: String!
+	key: String!
+	nodes(select: NodesRequest): NodesResponse!
+	value: String!
+}
+
+input FeatureInstanceMatcher {
+	and: [FeatureInstanceMatcher]
+	edges: EdgeCollectionMatcher
+	id: StringInstanceMatcher
+	key: StringInstanceMatcher
+	nodes: NodeCollectionMatcher
+	not: [FeatureInstanceMatcher]
+	or: [FeatureInstanceMatcher]
+	value: FeatureValueInstanceMatcher
+}
+
+input FeatureInstanceSorter {
+	edges: EdgeCollectionSorter
+	id: StringInstanceSorter
+	key: StringInstanceSorter
+	nodes: NodeCollectionSorter
+	value: FeatureValueInstanceSorter
+}
+
+input FeatureCollectionMatcher {
+	any: FeatureInstanceMatcher
+	every: FeatureInstanceMatcher
+	none: FeatureInstanceMatcher
+}
+
+input FeatureCollectionSorter {
+	count: FloatSortingOrder
+	edges: EdgeCollectionSorter
+	id: StringInstanceSorter
+	key: StringInstanceSorter
+	nodes: NodeCollectionSorter
+	value: FeatureValueInstanceSorter
+}
 
 interface FeatureKeyReducer {
 	mostCommon: String
+}
+
+input FeaturesRequest {
+	by: FeatureInstanceSorter
+	limit: Int
+	offset: Int
+	where: FeatureInstanceMatcher
+}
+
+interface FeaturesResponse {
+	calculate: FeaturesResponseReducer
+	enumerate: [Feature]
+}
+
+interface FeaturesResponseReducer {
+	count: Count
+	edges(select: EdgesRequest): EdgesResponseReducer
+	key: FeatureKeyReducer
+	nodes(select: NodesRequest): NodesResponseReducer
+	value: FeatureValueReducer
+}
+
+input FeatureValueInstanceMatcher {
+	asBoolean: BooleanInstanceMatcher
+	asFloat: FloatInstanceMatcher
+	asString: StringInstanceMatcher
+	asTimestamp: TimestampInstanceMatcher
+}
+
+input FeatureValueInstanceSorter {
+	asFloat: FloatSortingOrder
+	asString: StringInstanceSorter
+	asTimestamp: TimestampSortingOrder
 }
 
 interface FeatureValueReducer {
@@ -82,14 +225,6 @@ interface FeatureValueReducer {
 	asFloat: FloatReducer
 	asString: StringReducer
 	asTimestamp: TimestampReducer
-}
-
-#
-#
-#
-
-input BooleanInstanceMatcher {
-	equals: Boolean
 }
 
 input FloatInstanceMatcher {
@@ -100,11 +235,114 @@ input FloatInstanceMatcher {
 	isLessThanOrEqualTo: Float
 }
 
+interface FloatReducer {
+	mean: Float
+	median: Float
+	mode: Float
+	minimum: Float
+	maximum: Float
+	total: Float
+}
+
+enum FloatSortingOrder {
+	smallestToLargest
+	largestToSmallest
+}
+
+interface Node {
+	edges: NodeEdges!
+	features(select: FeaturesRequest): FeaturesResponse!
+	id: ID!
+}
+
+input NodeCollectionMatcher {
+	any: NodeInstanceMatcher
+	every: NodeInstanceMatcher
+	none: NodeInstanceMatcher
+}
+
+input NodeCollectionSorter {
+	count: FloatSortingOrder
+	edges: NodeEdgeInstanceSorter
+	features: FeatureCollectionSorter
+	id: StringInstanceSorter
+}
+
+input NodeEdgeCollectionMatcher {
+	inbound: EdgeCollectionMatcher
+	outbound: EdgeCollectionMatcher
+}
+
+# TODO rename this to NodeEdgesCollectionSorter?
+input NodeEdgeInstanceSorter {
+	inbound: EdgeCollectionSorter
+	outbound: EdgeCollectionSorter
+}
+
+interface NodeEdges {
+	inbound(select: EdgesRequest): EdgesResponse
+	outbound(select: EdgesRequest): EdgesResponse
+}
+
+interface NodeEdgesResponseReducer {
+	inbound(select: EdgesRequest): EdgesResponseReducer
+	outbound(select: EdgesRequest): EdgesResponseReducer
+}
+
+input NodeInstanceMatcher {
+	and: [NodeInstanceMatcher]
+	edges: NodeEdgeCollectionMatcher
+	features: FeatureCollectionMatcher
+	id: StringInstanceMatcher
+	or: [NodeInstanceMatcher]
+	not: [NodeInstanceMatcher]
+}
+
+input NodeInstanceSorter {
+	edges: NodeEdgeInstanceSorter
+	features: FeatureCollectionSorter
+	id: StringInstanceSorter
+}
+
+input NodesRequest {
+	by: NodeInstanceSorter
+	limit: Int
+	offset: Int
+	where: NodeInstanceMatcher
+}
+
+interface NodesResponse {
+	calculate: NodesResponseReducer
+	enumerate: [Node]
+}
+
+interface NodesResponseReducer {
+	count: Count
+	edges: NodeEdgesResponseReducer
+	features(select: FeaturesRequest): FeaturesResponseReducer
+}
+
 input StringInstanceMatcher {
+	contains: String
+	endsWith: String
 	equals: String
 	startsWith: String
-	endsWith: String
-	contains: String
+}
+
+input StringInstanceSorter {
+	alphabetical: StringSortingOrder
+	length: FloatSortingOrder
+}
+
+interface StringReducer {
+	longest: String
+	mostCommon: String
+	shortest: String
+}
+
+enum StringSortingOrder {
+	aToZ
+	zToA
 }
 
 input TimestampInstanceMatcher {
@@ -115,266 +353,16 @@ input TimestampInstanceMatcher {
 	isLessThanOrEqualTo: Int
 }
 
-#
-#
-#
-
-enum FloatSortingOrder {
-	SmallerToBigger
-	BiggerToSmaller
-}
-
-enum StringSortingOrder {
-	AToZ
-	ZToA
+interface TimestampReducer {
+	maximum: Int
+	mean: Int
+	median: Int
+	minimum: Int
+	mode: Int
+	total: Int
 }
 
 enum TimestampSortingOrder {
-	NewerToOlder
-	OlderToNewer
+	newestToOldest
+	oldestToNewest
 }
-
-#
-#
-#
-
-input StringInstanceSorter {
-	length: FloatSortingOrder
-	alphabetical: StringSortingOrder
-}
-
-#
-#
-#
-
-input FeatureValueInstanceMatcher {
-	asBoolean: BooleanInstanceMatcher
-	asFloat: FloatInstanceMatcher
-	asString: StringInstanceMatcher
-	asTimestamp: TimestampInstanceMatcher
-}
-
-input FeatureInstanceMatcher {
-	id: StringInstanceMatcher
-	key: StringInstanceMatcher
-	value: FeatureValueInstanceMatcher
-	nodes: NodeCollectionMatcher
-	edges: EdgeCollectionMatcher
-	and: [FeatureInstanceMatcher]
-	or: [FeatureInstanceMatcher]
-	not: [FeatureInstanceMatcher]
-}
-
-input FeatureCollectionMatcher {
-	any: FeatureInstanceMatcher
-	every: FeatureInstanceMatcher
-	none: FeatureInstanceMatcher
-}
-
-input FeatureValueInstanceSorter {
-	asFloat: FloatSortingOrder
-	asString: StringInstanceSorter
-	asTimestamp: TimestampSortingOrder
-}
-
-input FeatureCollectionSorter {
-	count: FloatSortingOrder
-	id: StringInstanceSorter
-	key: StringInstanceSorter
-	value: FeatureValueInstanceSorter
-	nodes: NodeCollectionSorter
-	edges: EdgeCollectionSorter
-}
-
-input FeatureInstanceSorter {
-	id: StringInstanceSorter
-	key: StringInstanceSorter
-	value: FeatureValueInstanceSorter
-	nodes: NodeCollectionSorter
-	edges: EdgeCollectionSorter
-}
-
-input FeaturesRequest {
-	where: FeatureInstanceMatcher
-	by: FeatureInstanceSorter
-	limit: Int
-	offset: Int
-}
-
-#
-#
-#
-
-interface FeaturesResponse {
-	calculate: FeaturesResponseReducer
-	enumerate: [Feature]
-}
-
-interface FeaturesResponseReducer {
-	count: Count
-	key: FeatureKeyReducer
-	value: FeatureValueReducer
-	edges(select: EdgesRequest): EdgesResponseReducer
-	nodes(select: NodesRequest): NodesResponseReducer
-}
-
-#
-#
-#
-
-input NodeEdgeCollectionMatcher {
-	inbound: EdgeCollectionMatcher
-	outbound: EdgeCollectionMatcher
-}
-
-input NodeInstanceMatcher {
-	id: StringInstanceMatcher
-	features: FeatureCollectionMatcher
-	edges: NodeEdgeCollectionMatcher
-	and: [NodeInstanceMatcher]
-	or: [NodeInstanceMatcher]
-	not: [NodeInstanceMatcher]
-}
-
-input NodeCollectionMatcher {
-	any: NodeInstanceMatcher
-	every: NodeInstanceMatcher
-	none: NodeInstanceMatcher
-}
-
-#
-#
-#
-
-input NodeEdgeInstanceSorter {
-	outbound: EdgeCollectionSorter
-	inbound: EdgeCollectionSorter
-}
-
-input NodeCollectionSorter {
-	count: FloatSortingOrder
-	id: StringInstanceSorter
-	edges: NodeEdgeInstanceSorter
-	features: FeatureCollectionSorter
-}
-
-input NodeInstanceSorter {
-	id: StringInstanceSorter
-	edges: NodeEdgeInstanceSorter
-	features: FeatureCollectionSorter
-}
-
-input NodesRequest {
-	where: NodeInstanceMatcher
-	by: NodeInstanceSorter
-	limit: Int
-	offset: Int
-}
-
-#
-#
-#
-
-interface NodesResponse {
-	calculate: NodesResponseReducer
-	enumerate: [Node]
-}
-
-interface NodeEdgesResponseReducer {
-	inbound(select: EdgesRequest): EdgesResponseReducer
-	outbound(select: EdgesRequest): EdgesResponseReducer
-}
-
-interface NodesResponseReducer {
-	count: Count
-	edges: NodeEdgesResponseReducer
-	features(select: FeaturesRequest): FeaturesResponseReducer
-}
-
-#
-#
-#
-
-input EdgeNodeInstanceMatcher {
-	origin: NodeInstanceMatcher
-	destination: NodeInstanceMatcher
-}
-
-input EdgeInstanceMatcher {
-	id: StringInstanceMatcher
-	features: FeatureCollectionMatcher
-	nodes: EdgeNodeInstanceMatcher
-	and: [EdgeInstanceMatcher]
-	or: [EdgeInstanceMatcher]
-	not: [EdgeInstanceMatcher]
-}
-
-input EdgeCollectionMatcher {
-	any: EdgeInstanceMatcher
-	every: EdgeInstanceMatcher
-	none: EdgeInstanceMatcher
-}
-
-#
-#
-#
-
-
-input EdgeNodeInstanceSorter {
-	origin: NodeInstanceSorter
-	destination: NodeInstanceSorter
-}
-
-input EdgeCollectionSorter {
-	count: FloatSortingOrder
-	id: StringInstanceSorter
-	nodes: EdgeNodeInstanceSorter
-	features: FeatureCollectionSorter
-}
-
-input EdgeInstanceSorter {
-	id: StringInstanceSorter
-	nodes: EdgeNodeInstanceSorter
-	features: FeatureCollectionSorter
-}
-
-input EdgesRequest {
-	where: EdgeInstanceMatcher
-	by: EdgeInstanceSorter
-	limit: Int
-	offset: Int
-}
-
-#
-#
-#
-
-interface EdgesResponse {
-	calculate: EdgesResponseReducer
-	enumerate: [Edge]
-}
-
-interface EdgeNodesResponseReducer {
-	origin(select: NodesRequest): NodesResponseReducer
-	destination(select: NodesRequest): NodesResponseReducer
-}
-
-interface EdgesResponseReducer {
-	count: Count
-	features(select: FeaturesRequest): FeaturesResponseReducer
-	nodes: EdgeNodesResponseReducer
-}
-
-#
-#
-#
-
-type Query {
-	edges(select: EdgesRequest): EdgesResponse!
-	features(select: FeaturesRequest): FeaturesResponse!
-	nodes(select: NodesRequest): NodesResponse!
-}
-
-#
-#
-#
