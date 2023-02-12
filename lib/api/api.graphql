@@ -1,31 +1,3 @@
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-
-type Query {
-	edges(select: SelectEdgesRequest): EdgesResponse!
-	features(select: SelectFeaturesRequest): FeaturesResponse!
-	nodes(select: SelectNodesRequest): NodesResponse!
-}
-
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-
 type Mutation {
 	create(
 		edges: CreateEdgeCollectionRequest,
@@ -39,39 +11,16 @@ type Mutation {
 	): DeleteResponse!
 }
 
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-
-type Subscription {
-	edgeCreated(select: SelectEdgesRequest): Edge!
-	edgeDeleted(select: SelectEdgesRequest): Edge!
-	featureCreated(select: SelectFeaturesRequest): Feature!
-	featureDeleted(select: SelectFeaturesRequest): Feature!
-	nodeCreated(select: SelectNodesRequest): Node!
-	nodeDeleted(select: SelectNodesRequest): Node!
+type Query {
+	edges(select: SelectEdgesRequest): EdgesResponse!
+	features(select: SelectFeaturesRequest): FeaturesResponse!
+	nodes(select: SelectNodesRequest): NodesResponse!
 }
 
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-##########
-
-# TODO rewrite as typescript
+# TODO subscriptions
+# TODO graphql -> typescript code generation
 # TODO deploy appsync api
+# TODO log handled requests from lambda
 # TODO create lambda interpreter
 
 input BooleanInstanceMatcher {
