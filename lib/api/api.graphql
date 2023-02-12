@@ -59,9 +59,99 @@ interface Delete {
 	nodes(select: NodesRequest): DeleteNodesResponse!
 }
 
+input NodeEdgeConstructor {
+	inbound: CreateEdgesInput
+	outbound: CreateEdgesInput
+}
+
+input NodeConstructor {
+	id: ID
+	edges: NodeEdgeConstructor
+	features: CreateFeaturesInput
+}
+
+input EdgeNodeConstructor {
+	destination: NodeConstructor
+	origin: NodeConstructor
+}
+
+input EdgeConstructor {
+	id: ID
+	edges: EdgeNodeConstructor
+	features: CreateFeaturesInput
+}
+
+input CreateEdgesInput {
+	constructors: [EdgeConstructor]
+}
+
+input CreateNodesinput {
+	constructors: [NodeConstructor]
+}
+
+input FeatureConstructor {
+	id: ID
+	key: String
+	value: String
+	nodes: CreateNodesinput
+	edges: CreateEdgesInput
+}
+
+input CreateFeaturesInput {
+	constructors: [FeatureConstructor]
+}
+
+interface CreatedEdgesFeaturesAndNodes {
+	edges(select: EdgesRequest): EdgesResponse!
+	features(select: FeaturesRequest): FeaturesResponse!
+	nodes(select: NodesRequest): NodesResponse!
+}
+
+interface CreateEdgesResponse {
+	created: CreatedEdgesFeaturesAndNodes
+}
+
+interface CreateFeaturesResponse {
+	created: CreatedEdgesFeaturesAndNodes
+}
+
+interface CreateNodesResponse {
+	created: CreatedEdgesFeaturesAndNodes
+}
+
+interface Create {
+	edges(from: CreateEdgesInput!): CreateEdgesResponse!
+	features(from: CreateFeaturesInput!): CreateFeaturesResponse!
+	nodes(from: CreateNodesinput!): CreateNodesResponse!
+}
+
 type Mutation {
+	create: Create
 	delete: Delete
-	# TODO upsert
+	# TODO update
+}
+
+mutation {
+	create {
+		nodes(from: {constructors: [
+			{
+				id: "foo",
+				features: {
+					constructors: [
+						{id: "foo"}
+					]
+				}
+			}
+		]}) {
+			created {
+				nodes {
+					enumerate {
+						id
+					}
+				}
+			}
+		}
+	}
 }
 
 ##########
