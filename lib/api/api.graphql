@@ -50,7 +50,14 @@ type Mutation {
 ##########
 ##########
 
-# TODO subscriptions
+type Subscription {
+	edgeCreated(select: SelectEdgesRequest): Edge!
+	edgeDeleted(select: SelectEdgesRequest): Edge!
+	featureCreated(select: SelectFeaturesRequest): Feature!
+	featureDeleted(select: SelectFeaturesRequest): Feature!
+	nodeCreated(select: SelectNodesRequest): Node!
+	nodeDeleted(select: SelectNodesRequest): Node!
+}
 
 ##########
 ##########
