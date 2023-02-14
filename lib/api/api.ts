@@ -2,12 +2,19 @@ import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
 import {
   CfnDataSource,
   CfnGraphQLApi,
+  CfnGraphQLSchema,
   CfnResolver,
 } from "aws-cdk-lib/aws-appsync";
-import { Policy, PolicyStatement } from "aws-cdk-lib/aws-iam";
+import {
+  Policy,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from "aws-cdk-lib/aws-iam";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import { Database } from "../database";
+import { schema } from "./schema";
 
 export class Api extends Construct {
   constructor(scope: Construct, id: string, database: Database) {
@@ -49,6 +56,16 @@ export class Api extends Construct {
 
     graphqlApiHandler.role?.attachInlinePolicy(inlinePolicy);
 
+    const appSyncLambdaServiceRole = new Role(
+      this,
+      `${id}-appsync-lambda-service-role`,
+      {
+        assumedBy: new ServicePrincipal("appsync.amazonaws.com"),
+      }
+    );
+
+    graphqlApiHandler.grantInvoke(appSyncLambdaServiceRole);
+
     const graphQlApi = new CfnGraphQLApi(this, `${id}-appsync-graphql-api`, {
       authenticationType: "API_KEY",
       name: `${id}-appsync-graphql-api`,
@@ -59,55 +76,87 @@ export class Api extends Construct {
       `${id}-appsync-graphql-api-lambda-data-source`,
       {
         apiId: graphQlApi.attrApiId,
-        name: `${id}-appsync-graphql-api-lambda-data-source`,
+        name: `homunculonimbusLambdaDataSource`,
         type: "AWS_LAMBDA",
         lambdaConfig: {
           lambdaFunctionArn: graphqlApiHandler.functionArn,
         },
+        serviceRoleArn: appSyncLambdaServiceRole.roleArn,
       }
     );
 
-    new CfnResolver(this, `${id}-appsync-graphql-api-edges-query-resolver`, {
-      apiId: graphQlApi.attrApiId,
-      dataSourceName: lambdaDataSource.name,
-      fieldName: "edges",
-      typeName: "Query",
-    });
+    const graphQLSchema = new CfnGraphQLSchema(
+      this,
+      `${id}-appsync-graphql-schema`,
+      {
+        apiId: graphQlApi.attrApiId,
+        definition: schema,
+      }
+    );
 
-    new CfnResolver(this, `${id}-appsync-graphql-api-features-query-resolver`, {
-      apiId: graphQlApi.attrApiId,
-      dataSourceName: lambdaDataSource.name,
-      fieldName: "features",
-      typeName: "Query",
-    });
+    const edgesQueryResolver = new CfnResolver(
+      this,
+      `${id}-appsync-graphql-api-edges-query-resolver`,
+      {
+        apiId: graphQlApi.attrApiId,
+        dataSourceName: lambdaDataSource.attrName,
+        fieldName: "edges",
+        typeName: "Query",
+      }
+    );
 
-    new CfnResolver(this, `${id}-appsync-graphql-api-nodes-query-resolver`, {
-      apiId: graphQlApi.attrApiId,
-      dataSourceName: lambdaDataSource.name,
-      fieldName: "nodes",
-      typeName: "Query",
-    });
+    edgesQueryResolver.addDependency(graphQLSchema);
 
-    new CfnResolver(
+    const featuresQueryResolver = new CfnResolver(
+      this,
+      `${id}-appsync-graphql-api-features-query-resolver`,
+      {
+        apiId: graphQlApi.attrApiId,
+        dataSourceName: lambdaDataSource.attrName,
+        fieldName: "features",
+        typeName: "Query",
+      }
+    );
+
+    featuresQueryResolver.addDependency(graphQLSchema);
+
+    const nodesQueryResolver = new CfnResolver(
+      this,
+      `${id}-appsync-graphql-api-nodes-query-resolver`,
+      {
+        apiId: graphQlApi.attrApiId,
+        dataSourceName: lambdaDataSource.attrName,
+        fieldName: "nodes",
+        typeName: "Query",
+      }
+    );
+
+    nodesQueryResolver.addDependency(graphQLSchema);
+
+    const createMutationResolver = new CfnResolver(
       this,
       `${id}-appsync-graphql-api-create-mutation-resolver`,
       {
         apiId: graphQlApi.attrApiId,
-        dataSourceName: lambdaDataSource.name,
-        fieldName: "nodes",
-        typeName: "Query",
+        dataSourceName: lambdaDataSource.attrName,
+        fieldName: "create",
+        typeName: "Mutation",
       }
     );
 
-    new CfnResolver(
+    createMutationResolver.addDependency(graphQLSchema);
+
+    const deleteMutationResolver = new CfnResolver(
       this,
-      `${id}-appsync-graphql-api-update-mutation-resolver`,
+      `${id}-appsync-graphql-api-delete-mutation-resolver`,
       {
         apiId: graphQlApi.attrApiId,
-        dataSourceName: lambdaDataSource.name,
-        fieldName: "nodes",
-        typeName: "Query",
+        dataSourceName: lambdaDataSource.attrName,
+        fieldName: "delete",
+        typeName: "Mutation",
       }
     );
+
+    deleteMutationResolver.addDependency(graphQLSchema);
   }
 }
