@@ -13,8 +13,8 @@ import {
 } from "aws-cdk-lib/aws-iam";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
+import { readFileSync } from "fs";
 import { Database } from "../database";
-import { schema } from "./schema";
 
 export class Api extends Construct {
   constructor(scope: Construct, id: string, database: Database) {
@@ -84,6 +84,10 @@ export class Api extends Construct {
         serviceRoleArn: appSyncLambdaServiceRole.roleArn,
       }
     );
+
+    const schema = readFileSync("./schema.graphql", { encoding: "utf-8" });
+
+    console.log(`Schema: ${JSON.stringify(schema, null, 2)}`);
 
     const graphQLSchema = new CfnGraphQLSchema(
       this,
