@@ -404,7 +404,7 @@ Every `PK` and `SK` attribute value comprises three parts:
 
 1. A type signifier (e.g. `e` for "edge", `n` for "node", and `f` for "feature")
 2. A delimiting character (`#`)
-3. An identifier (`030702ca-97f6-4611-b43a-d305f5a964e7`)
+3. An instance identifier (`030702ca-97f6-4611-b43a-d305f5a964e7`)
 
 Feature records have two additional attributes: `Key` and `Value`.
 
