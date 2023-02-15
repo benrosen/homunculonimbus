@@ -1,0 +1,15 @@
+overwrite: true
+schema:
+  - lib/api/schema.graphql
+
+generates:
+  lib/api/schema.ts:
+    plugins:
+      - typescript
+      - add:
+          content:
+            - "/**"
+            - " * Don't edit this file manually."
+            - " * Instead, regenerate it using the 'codegen' script in package.json."
+            - " * For more information, see https://the-guild.dev/graphql/codegen/docs/getting-started"
+            - " */\n"
