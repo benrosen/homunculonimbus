@@ -85,7 +85,9 @@ export class Api extends Construct {
       }
     );
 
-    const schema = readFileSync("./schema.graphql", { encoding: "utf-8" });
+    const schema = readFileSync("lib/api/schema.graphql", {
+      encoding: "utf-8",
+    });
 
     console.log(`Schema: ${JSON.stringify(schema, null, 2)}`);
 
