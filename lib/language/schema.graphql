@@ -1,0 +1,1241 @@
+"""
+Describes how a collection of float values should be sorted.
+"""
+enum FloatSortingOrder {
+	"""
+	`Float` values should be sorted in ascending order.
+	"""
+	SmallestToLargest
+
+	"""
+	`Float` values should be sorted in descending order.
+	"""
+	LargestToSmallest
+}
+
+"""
+Describes how a collection of string values should be sorted.
+"""
+enum StringSortingOrder {
+	"""
+	`String` values should be sorted in alphabetical order.
+	"""
+	AToZ
+
+	"""
+	`String` values should be sorted in reverse alphabetical order.
+	"""
+	ZToA
+}
+
+"""
+Describes how a collection of timestamp values should be sorted.
+"""
+enum TimestampSortingOrder {
+	"""
+	`Timestamp` values should be sorted in chronological order.
+	"""
+	NewestToOldest
+
+	"""
+	`Timestamp` values should be sorted in reverse chronological order.
+	"""
+	OldestToNewest
+}
+
+"""
+Describes features and nodes that should be created and connected to the newly created edge.
+"""
+input CreateEdgeInput {
+	"""
+	Descriptions of features that should be created and attached to the newly created edge.
+	"""
+	features: CreateFeaturesInput
+
+	"""
+	Descriptions of nodes that should be created and attached to the newly created edge.
+	"""
+	nodes: CreateEdgeNodeInput
+}
+
+"""
+Describes nodes that should be created and connected to the newly created edge.
+"""
+input CreateEdgeNodeInput {
+	"""
+	A description of the node that should be created at the termination point of the newly created edge.
+	"""
+	termination: CreateNodeInput
+
+	"""
+	A description of the node that should be created at the origin point of the newly created edge.
+	"""
+	origin: CreateNodeInput
+}
+
+"""
+Describes edges that should be created.
+"""
+input CreateEdgesInput {
+	"""
+	Descriptions of edges that should be created.
+	"""
+	from: [CreateEdgeInput]
+}
+
+"""
+Describes a feature that should be created.
+"""
+input CreateFeatureInput {
+	"""
+	Descriptions of edges that should be created and attached to the newly created feature.
+	"""
+	edges: CreateEdgesInput
+
+	"""
+	The key that should be used for the newly created feature.
+	"""
+	key: String!
+
+	"""
+	Descriptions of nodes that should be created and attached to the newly created feature.
+	"""
+	nodes: CreateNodesInput
+
+	"""
+	The value that should be used for the newly created feature.
+	"""
+	value: String!
+}
+
+"""
+Describes features that should be created.
+"""
+input CreateFeaturesInput {
+	"""
+	Descriptions of features that should be created.
+	"""
+	from: [CreateFeatureInput]
+}
+
+"""
+Describes a node that should be created.
+"""
+input CreateNodeInput {
+	"""
+	Descriptions of edges that should be created and attached to the newly created node.
+	"""
+	edges: CreateNodeEdgeInput
+
+	"""
+	Descriptions of features that should be created and attached to the newly created node.
+	"""
+	features: CreateFeaturesInput
+}
+
+"""
+Describes edges that should be created and connected to the newly created node.
+"""
+input CreateNodeEdgeInput {
+	"""
+	Descriptions of edges that should originate from the newly created edge.
+	"""
+	inbound: CreateEdgesInput
+
+	"""
+	Descriptions of edges that should terminate at the newly created edge.
+	"""
+	outbound: CreateEdgesInput
+}
+
+"""
+Describes nodes that should be created.
+"""
+input CreateNodesInput {
+	"""
+	Descriptions of nodes that should be created.
+	"""
+	from: [CreateNodeInput]
+}
+
+"""
+Describes matching criteria for booleans.
+"""
+input MatchBooleanInput {
+	"""
+	Match boolean values that equal the value of this property.
+	"""
+	equals: Boolean
+}
+
+"""
+Describes matching criteria for edges.
+"""
+input MatchEdgeInput {
+	"""
+	Match edges that meet all of these criteria.
+	"""
+	and: [MatchEdgeInput]
+
+	"""
+	Match edges with features that meet these criteria.
+	"""
+	features: MatchFeaturesInput
+
+	"""
+	Match edges with ids that meet these criteria.
+	"""
+	id: MatchStringInput
+
+	"""
+	Match edges with nodes that meet these criteria.
+	"""
+	nodes: MatchEdgeNodeInput
+
+	"""
+	Match edges that meet none of these criteria.
+	"""
+	not: [MatchEdgeInput]
+
+	"""
+	Match edges that meet any of these criteria.
+	"""
+	or: [MatchEdgeInput]
+}
+
+"""
+Describes matching criteria for edge nodes.
+"""
+input MatchEdgeNodeInput {
+	"""
+	Match edges with termination nodes that meet these criteria.
+	"""
+	termination: MatchNodeInput
+
+	"""
+	Match edges with origin nodes that meet these criteria.
+	"""
+	origin: MatchNodeInput
+}
+
+"""
+Describes matching criteria for collections of edges.
+"""
+input MatchEdgesInput {
+	"""
+	Match collections of edges where any edge meets these criteria.
+	"""
+	any: MatchEdgeInput
+
+	"""
+	Match collections of edges where every edge meets these criteria.
+	"""
+	every: MatchEdgeInput
+
+	"""
+	Match collections of edges where no edge meets these criteria.
+	"""
+	none: MatchEdgeInput
+}
+
+"""
+Describes matching criteria for features.
+"""
+input MatchFeatureInput {
+	"""
+	Match features that meet all of these criteria.
+	"""
+	and: [MatchFeatureInput]
+
+	"""
+	Match features with edges that meet these criteria.
+	"""
+	edges: MatchEdgesInput
+
+	"""
+	Match features with ids that meet these criteria.
+	"""
+	id: MatchStringInput
+
+	"""
+	Match edges with keys that meet these criteria.
+	"""
+	key: MatchStringInput
+
+	"""
+	Match features with nodes that meet these criteria.
+	"""
+	nodes: MatchNodesInput
+
+	"""
+	Match features that meet none of these criteria.
+	"""
+	not: [MatchFeatureInput]
+
+	"""
+	Match features that meet any of these criteria.
+	"""
+	or: [MatchFeatureInput]
+
+	"""
+	Match edges with values that meet these criteria.
+	"""
+	value: MatchFeatureValueInput
+}
+
+"""
+Describes matching criteria for collections of features.
+"""
+input MatchFeaturesInput {
+	"""
+	Match collections of features where any feature meets these criteria.
+	"""
+	any: MatchFeatureInput
+
+	"""
+	Match collections of features where every feature meets these criteria.
+	"""
+	every: MatchFeatureInput
+
+	"""
+	Match collections of features where no feature meets these criteria.
+	"""
+	none: MatchFeatureInput
+}
+
+"""
+Describes matching criteria for feature values.
+"""
+input MatchFeatureValueInput {
+	"""
+	Treat the feature value as a boolean.
+	"""
+	asBoolean: MatchBooleanInput
+
+	"""
+	Treat the feature value as a float.
+	"""
+	asFloat: MatchFloatInput
+
+	"""
+	Treat the feature value as a string.
+	"""
+	asString: MatchStringInput
+
+	"""
+	Treat the feature value as a timestamp.
+	"""
+	asTimestamp: MatchTimestampInput
+}
+
+"""
+Describes matching criteria for floats.
+"""
+input MatchFloatInput {
+	"""
+	Match float values that equal the value of this property.
+	"""
+	equals: Float
+
+	"""
+	Match boolean values that are greater than the value of this property.
+	"""
+	isGreaterThan: Float
+
+	"""
+	Match boolean values that are greater than or equal to the value of this property.
+	"""
+	isGreaterThanOrEqualTo: Float
+
+	"""
+	Match boolean values that are less than the value of this property.
+	"""
+	isLessThan: Float
+
+	"""
+	Match boolean values that are less than or equal to the value of this property.
+	"""
+	isLessThanOrEqualTo: Float
+}
+
+"""
+Describes matching criteria for node edges.
+"""
+input MatchNodeEdgesInput {
+	"""
+	Match nodes with inbound edges that meet these criteria.
+	"""
+	inbound: MatchEdgesInput
+
+	"""
+	Match nodes with outbound edges that meet these criteria.
+	"""
+	outbound: MatchEdgesInput
+}
+
+"""
+Describes matching criteria for nodes.
+"""
+input MatchNodeInput {
+	"""
+	Match nodes that meet all of these criteria.
+	"""
+	and: [MatchNodeInput]
+
+	"""
+	Match nodes with edges that meet these criteria.
+	"""
+	edges: MatchNodeEdgesInput
+
+	"""
+	Match nodes with features that meet these criteria.
+	"""
+	features: MatchFeaturesInput
+
+	"""
+	Match nodes with ids that meet these criteria.
+	"""
+	id: MatchStringInput
+
+	"""
+	Match nodes that meet any of these criteria.
+	"""
+	or: [MatchNodeInput]
+
+	"""
+	Match nodes that meet none of these criteria.
+	"""
+	not: [MatchNodeInput]
+}
+
+"""
+Describes matching criteria for collections of nodes.
+"""
+input MatchNodesInput {
+	"""
+	Match collections of nodes where any node meets these criteria.
+	"""
+	any: MatchNodeInput
+
+	"""
+	Match collections of nodes where every node meets these criteria.
+	"""
+	every: MatchNodeInput
+
+	"""
+	Match collections of nodes where no node meets these criteria.
+	"""
+	none: MatchNodeInput
+}
+
+"""
+Describes matching criteria for strings.
+"""
+input MatchStringInput {
+	"""
+	Match string values that contain the value of this property.
+	"""
+	contains: String
+
+	"""
+	Match string values that end with the value of this property.
+	"""
+	endsWith: String
+
+	"""
+	Match string values that equal the value of this property.
+	"""
+	equals: String
+
+	"""
+	Match string values that start with the value of this property.
+	"""
+	startsWith: String
+}
+
+"""
+Describes matching criteria for timestamps.
+"""
+input MatchTimestampInput {
+	"""
+	Match timestamp values that equal the value of this property.
+	"""
+	equals: Int
+
+	"""
+	Match timestamp values that are greater than the value of this property.
+	"""
+	isGreaterThan: Int
+
+	"""
+	Match timestamp values that are greater than or equal to the value of this property.
+	"""
+	isGreaterThanOrEqualTo: Int
+
+	"""
+	Match timestamp values that are less than the value of this property.
+	"""
+	isLessThan: Int
+
+	"""
+	Match timestamp values that are less than or equal to the value of this property.
+	"""
+	isLessThanOrEqualTo: Int
+}
+
+"""
+Describes matching, sorting, and pagination criteria for edges.
+"""
+input SelectEdgesInput {
+	"""
+	Sort matched edges by these criteria.
+	"""
+	by: SortEdgeInput
+
+	"""
+	Select this many items from the sorted matched edges.
+	"""
+	limit: Int
+
+	"""
+	Offset the selection of sorted matched edges by this many items.
+	"""
+	offset: Int
+
+	"""
+	Match edges that meet these criteria.
+	"""
+	where: MatchEdgeInput
+}
+
+"""
+Describes matching, sorting, and pagination criteria for features.
+"""
+input SelectFeaturesInput {
+	"""
+	Sort matched features by these criteria.
+	"""
+	by: SortFeatureInput
+
+	"""
+	Select this many items from the sorted matched features.
+	"""
+	limit: Int
+
+	"""
+	Offset the selection of sorted matched features by this many items.
+	"""
+	offset: Int
+
+	"""
+	Match features that meet these criteria.
+	"""
+	where: MatchFeatureInput
+}
+
+"""
+Describes matching, sorting, and pagination criteria for nodes.
+"""
+input SelectNodesInput {
+	"""
+	Sort matched nodes by these criteria.
+	"""
+	by: SortNodeInput
+
+	"""
+	Select this many items from the sorted matched nodes.
+	"""
+	limit: Int
+
+	"""
+	Offset the selection of sorted matched nodes by this many items.
+	"""
+	offset: Int
+
+	"""
+	Match nodes that meet these criteria.
+	"""
+	where: MatchNodeInput
+}
+
+"""
+Describes sorting criteria for edges.
+"""
+input SortEdgeInput {
+	"""
+	Sort edges by features.
+	"""
+	features: SortFeaturesInput
+
+	"""
+	Sort edges by id.
+	"""
+	id: SortStringsInput
+
+	"""
+	Sort edges by nodes.
+	"""
+	nodes: SortEdgeNodesInput
+}
+
+"""
+Describes sorting criteria for collections of edges.
+"""
+input SortEdgesInput {
+	"""
+	Sort edge collections by count.
+	"""
+	count: FloatSortingOrder
+
+	"""
+	Sort edge collections by features.
+	"""
+	features: SortFeaturesInput
+
+	"""
+	Sort edge collections by id.
+	"""
+	id: SortStringsInput
+
+	"""
+	Sort edge collections by nodes.
+	"""
+	nodes: SortEdgeNodesInput
+}
+
+"""
+Describes sorting criteria for edges nodes.
+"""
+input SortEdgeNodesInput {
+	"""
+	Sort edges by termination node.
+	"""
+	termination: SortNodeInput
+
+	"""
+	Sort edges by origin node.
+	"""
+	origin: SortNodeInput
+}
+
+"""
+Describes sorting criteria for features.
+"""
+input SortFeatureInput {
+	"""
+	Sort features by edges.
+	"""
+	edges: SortEdgesInput
+
+	"""
+	Sort features by id.
+	"""
+	id: SortStringsInput
+
+	"""
+	Sort features by key.
+	"""
+	key: SortStringsInput
+
+	"""
+	Sort features by node.
+	"""
+	nodes: SortNodesInput
+
+	"""
+	Sort features by value.
+	"""
+	value: SortFeatureValueInput
+}
+
+"""
+Describes sorting criteria for collections of features.
+"""
+input SortFeaturesInput {
+	"""
+	Sort feature collections by count.
+	"""
+	count: FloatSortingOrder
+
+	"""
+	Sort feature collections by edges.
+	"""
+	edges: SortEdgesInput
+
+	"""
+	Sort feature collections by id.
+	"""
+	id: SortStringsInput
+
+	"""
+	Sort feature collections by key.
+	"""
+	key: SortStringsInput
+
+	"""
+	Sort feature collections by nodes.
+	"""
+	nodes: SortNodesInput
+
+	"""
+	Sort feature collections by value.
+	"""
+	value: SortFeatureValueInput
+}
+
+"""
+Describes sorting criteria for feature values.
+"""
+input SortFeatureValueInput {
+	"""
+	Treat the feature value as a float.
+	"""
+	asFloat: FloatSortingOrder
+
+	"""
+	Treat the feature value as a string.
+	"""
+	asString: SortStringsInput
+
+	"""
+	Treat the feature value as a timestamp.
+	"""
+	asTimestamp: TimestampSortingOrder
+}
+
+"""
+Describes sorting criteria for node edges.
+"""
+input SortNodeEdgeInput {
+	"""
+	Sort nodes by inbound edges.
+	"""
+	inbound: SortEdgesInput
+
+	"""
+	Sort nodes by outbound edges.
+	"""
+	outbound: SortEdgesInput
+}
+
+"""
+Describes sorting criteria for nodes.
+"""
+input SortNodeInput {
+	"""
+	Sort nodes by edges.
+	"""
+	edges: SortNodeEdgeInput
+
+	"""
+	Sort nodes by features.
+	"""
+	features: SortFeaturesInput
+
+	"""
+	Sort nodes by id.
+	"""
+	id: SortStringsInput
+}
+
+"""
+Describes sorting criteria for collections of nodes.
+"""
+input SortNodesInput {
+	"""
+	Sort node collections by count.
+	"""
+	count: FloatSortingOrder
+
+	"""
+	Sort node collections by edges.
+	"""
+	edges: SortNodeEdgeInput
+
+	"""
+	Sort node collections by features.
+	"""
+	features: SortFeaturesInput
+
+	"""
+	Sort node collections by id.
+	"""
+	id: SortStringsInput
+}
+
+"""
+Describes sorting criteria for strings.
+"""
+input SortStringsInput {
+	"""
+	Sort strings alphabetically.
+	"""
+	alphabetical: StringSortingOrder
+
+	"""
+	Sort strings by length.
+	"""
+	length: FloatSortingOrder
+}
+
+"""
+Descriptions of booleans.
+"""
+interface BooleansMetadata {
+	"""
+	The most common boolean value.
+	"""
+	mostCommon: Boolean
+}
+
+"""
+Describes quantities of items.
+"""
+interface Count {
+	"""
+	The total number of items.
+	"""
+	total: Int
+
+	"""
+	The number of unique items.
+	"""
+	unique: Int
+}
+
+"""
+Records that were created.
+"""
+interface CreatedRecords {
+	"""
+	Created records.
+	"""
+	created: MutatedRecords!
+}
+
+"""
+Records that were deleted.
+"""
+interface DeletedRecords {
+	"""
+	Deleted records.
+	"""
+	deleted: MutatedRecords
+}
+
+"""
+A uniquely-identified directional connection between two nodes that may be associated with an arbitrary number of features.
+"""
+interface Edge {
+	"""
+	Features associated with this edge.
+	"""
+	features(select: SelectFeaturesInput): Features!
+
+	"""
+	A unique identifier for this edge.
+	"""
+	id: ID!
+
+	"""
+	Nodes connected to either end of this edge.
+	"""
+	nodes: EdgeNodes
+}
+
+"""
+Two nodes connected by an edge.
+"""
+interface EdgeNodes {
+	"""
+	The node at the termination (end) of the edge.
+	"""
+	termination: Node!
+
+	"""
+	The node at the origin (start) of the edge.
+	"""
+	origin: Node!
+}
+
+"""
+Descriptions of edge-connected nodes.
+"""
+interface EdgeNodesMetadata {
+	"""
+	Metadata that describes termination nodes.
+	"""
+	termination(select: SelectNodesInput): NodesMetadata
+
+	"""
+	Metadata that describes origin nodes.
+	"""
+	origin(select: SelectNodesInput): NodesMetadata
+}
+
+"""
+A collection of edges.
+"""
+interface Edges {
+	"""
+	Metadata that describes the collection of edges.
+	"""
+	calculate: EdgesMetadata
+
+	"""
+	The collection of edges.
+	"""
+	enumerate: [Edge]
+}
+
+"""
+A description of a collection of edges.
+"""
+interface EdgesMetadata {
+	"""
+	Metadata that describes quantities of edges.
+	"""
+	count: Count
+
+	"""
+	Metadata that describes edge features.
+	"""
+	features(select: SelectFeaturesInput): FeaturesMetadata
+
+	"""
+	Metadata that describes edge nodes.
+	"""
+	nodes: EdgeNodesMetadata
+}
+
+"""
+A key-value pair that can be associated with one or more edges and/or nodes.
+"""
+interface Feature {
+	"""
+	Edges associated with this feature.
+	"""
+	edges(select: SelectEdgesInput): Edges
+
+	"""
+	A unique identifier for this feature.
+	"""
+	id: String!
+
+	"""
+	A label for this feature.
+	"""
+	key: String!
+
+	"""
+	Nodes associated with this feature.
+	"""
+	nodes(select: SelectNodesInput): Nodes!
+
+	"""
+	The value of this feature.
+	"""
+	value: String!
+}
+
+"""
+A description of a collection of feature keys.
+"""
+interface FeatureKeysMetadata {
+	"""
+	The most common feature key value.
+	"""
+	mostCommon: String
+}
+
+"""
+A collection of features.
+"""
+interface Features {
+	"""
+	Metadata that describes the collection of features.
+	"""
+	calculate: FeaturesMetadata
+
+	"""
+	The collection of features.
+	"""
+	enumerate: [Feature]
+}
+
+"""
+A description of a collection of features.
+"""
+interface FeaturesMetadata {
+	"""
+	Metadata that describes quantities of features.
+	"""
+	count: Count
+
+	"""
+	Metadata that describes feature edges.
+	"""
+	edges(select: SelectEdgesInput): EdgesMetadata
+
+	"""
+	Metadata that describes feature keys.
+	"""
+	key: FeatureKeysMetadata
+
+	"""
+	Metadata that describes feature nodes.
+	"""
+	nodes(select: SelectNodesInput): NodesMetadata
+
+	"""
+	Metadata that describes feature values.
+	"""
+	value: FeatureValuesMetadata
+}
+
+"""
+A description of a collection of feature values.
+"""
+interface FeatureValuesMetadata {
+	"""
+	Treat the feature values as booleans.
+	"""
+	asBoolean: BooleansMetadata
+
+	"""
+	Treat the feature values as floats.
+	"""
+	asFloat: FloatsMetadata
+
+	"""
+	Treat the feature values as strings.
+	"""
+	asString: StringsMetadata
+
+	"""
+	Treat the feature values as timestamps.
+	"""
+	asTimestamp: TimestampsMetadata
+}
+
+"""
+A description of a collection of floats.
+"""
+interface FloatsMetadata {
+	"""
+	The mean float value.
+	"""
+	mean: Float
+
+	"""
+	The median float value.
+	"""
+	median: Float
+
+	"""
+	The mode float value.
+	"""
+	mode: Float
+
+	"""
+	The minimum float value.
+	"""
+	minimum: Float
+
+	"""
+	The maximum float value.
+	"""
+	maximum: Float
+}
+
+"""
+Records that changed.
+"""
+interface MutatedRecords {
+	"""
+	Edges that changed.
+	"""
+	edges(select: SelectEdgesInput): Edges!
+
+	"""
+	Features that changed.
+	"""
+	features(select: SelectFeaturesInput): Features!
+
+	"""
+	Nodes that changed.
+	"""
+	nodes(select: SelectNodesInput): Nodes!
+}
+
+"""
+A uniquely-identified entity that may be connected to other nodes via edges and/or associated with an arbitrary number of features.
+"""
+interface Node {
+	"""
+	Edges connected to this node.
+	"""
+	edges: NodeEdges!
+
+	"""
+	Features associated with this node.
+	"""
+	features(select: SelectFeaturesInput): Features!
+
+	"""
+	A unique identifier for this node.
+	"""
+	id: ID!
+}
+
+"""
+Edges connected to a node.
+"""
+interface NodeEdges {
+	"""
+	Edges that terminate (end) at this node.
+	"""
+	inbound(select: SelectEdgesInput): Edges
+
+	"""
+	Edges that originate (start) at this node.
+	"""
+	outbound(select: SelectEdgesInput): Edges
+}
+
+"""
+Descriptions of edges connected to a node.
+"""
+interface NodeEdgesMetadata {
+	"""
+	Metadata that describes edges that terminate (end) at this node.
+	"""
+	inbound(select: SelectEdgesInput): EdgesMetadata
+
+	"""
+	Metadata that describes edges that originate (start) at this node.
+	"""
+	outbound(select: SelectEdgesInput): EdgesMetadata
+}
+
+"""
+A collection of nodes.
+"""
+interface Nodes {
+	"""
+	Metadata that describes the collection of nodes.
+	"""
+	calculate: NodesMetadata
+
+	"""
+	The collection of nodes.
+	"""
+	enumerate: [Node]
+}
+
+"""
+A description of a collection of nodes.
+"""
+interface NodesMetadata {
+	"""
+	Metadata that describes quantities of nodes.
+	"""
+	count: Count
+
+	"""
+	Metadata that describes edges connected to this node.
+	"""
+	edges: NodeEdgesMetadata
+
+	"""
+	Metadata that describes featuers associated with this node.
+	"""
+	features(select: SelectFeaturesInput): FeaturesMetadata
+}
+
+"""
+A description of a collection of strings.
+"""
+interface StringsMetadata {
+	"""
+	The longest string value.
+	"""
+	longest: String
+
+	"""
+	The most common boolean value.
+	"""
+	mostCommon: String
+
+	"""
+	The shortest string value.
+	"""
+	shortest: String
+}
+
+"""
+A description of a collection of timestamps.
+"""
+interface TimestampsMetadata {
+	"""
+	The maximum timestamp value.
+	"""
+	maximum: Int
+
+	"""
+	The mean timestamp value.
+	"""
+	mean: Int
+
+	"""
+	The median timestamp value.
+	"""
+	median: Int
+
+	"""
+	The minimum timestamp value.
+	"""
+	minimum: Int
+
+	"""
+	The mode timestamp value.
+	"""
+	mode: Int
+}
+
+type Mutation {
+	"""
+	Create edges, features, and/or nodes.
+	"""
+	create(
+		edges: CreateEdgesInput
+		features: CreateFeaturesInput
+		nodes: CreateNodesInput
+	): CreatedRecords!
+
+	"""
+	Delete edges, features, and/or nodes.
+	"""
+	delete(
+		edges: SelectEdgesInput
+		features: SelectFeaturesInput
+		nodes: SelectNodesInput
+	): DeletedRecords!
+}
+
+type Query {
+	"""
+	Query edges.
+	"""
+	edges(select: SelectEdgesInput): Edges!
+
+	"""
+	Query features.
+	"""
+	features(select: SelectFeaturesInput): Features!
+
+	"""
+	Query nodes.
+	"""
+	nodes(select: SelectNodesInput): Nodes!
+}
