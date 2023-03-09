@@ -1,5 +1,4 @@
 import { APIGatewayProxyResult, AppSyncResolverEvent } from "aws-lambda";
-import gql from "graphql-tag";
 
 // derive dynamodb commands from AST
 // issue commands and collect responses
@@ -36,18 +35,12 @@ exports.handler = async (
   console.log(`Selection: ${selection}`);
 
   const reconstructedQueryString = `${parentTypeName.toLowerCase()} {
-  ${fieldName}${requestArguments ? `(${requestArguments})` : ""} ${selection}
-}`;
+    ${fieldName}${requestArguments ? `(${requestArguments})` : ""} ${selection}
+  }`;
 
   console.log(
     `Reconstructed GraphQL Query String: ${reconstructedQueryString}`
   );
-
-  const ast = gql`
-    ${reconstructedQueryString}
-  `;
-
-  console.log(`AST: ${JSON.stringify(ast, null, 2)}`);
 
   return {
     statusCode: 501,
