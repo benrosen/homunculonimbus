@@ -9,7 +9,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "codegen": "graphql-codegen"
+    "codegen": "graphql-codegen",
+    "docgen": "typedoc lib/language/index.ts ./docs/language"
   },
   "devDependencies": {
     "@graphql-codegen/add": "^4.0.0",
