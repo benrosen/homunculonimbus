@@ -5,7 +5,7 @@ export const interpretQueryString = ({
 }: {
   queryString: string;
 }) => {
-  const ast = gql`
+  return gql`
     ${queryString}
   `;
 };
